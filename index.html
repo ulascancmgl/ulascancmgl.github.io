@@ -7,7 +7,13 @@
 </head>
 <body>
     <h1>Hesabımı Sil</h1>
-    <button id="delete-account">Hesabımı Sil</button>
+    <form id="delete-form">
+        <label for="email">Email:</label>
+        <input type="email" id="email" required><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" required><br><br>
+        <button type="button" id="delete-account">Hesabımı Sil</button>
+    </form>
 
     <script>
         // Firebase yapılandırmanızı buraya ekleyin
@@ -22,14 +28,27 @@
         // Firebase'i başlatın
         firebase.initializeApp(firebaseConfig);
 
+        // Add event listener to the delete-account button
         document.getElementById('delete-account').addEventListener('click', function() {
-            var user = firebase.auth().currentUser;
-            user.delete().then(function() {
-                // Kullanıcı hesabı başarıyla silindi
-                alert('Hesabınız başarıyla silindi.');
-            }).catch(function(error) {
-                // Bir hata oluştu
-                alert('Bir hata oluştu: ' + error.message);
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+
+            // Sign in the user for verification
+            firebase.auth().signInWithEmailAndPassword(email, password)
+            .then(function(userCredential) {
+                var user = userCredential.user;
+                // Delete the user's account
+                user.delete().then(function() {
+                    // Kullanıcı hesabı başarıyla silindi
+                    alert('Hesabınız başarıyla silindi.');
+                }).catch(function(error) {
+                    // Bir hata oluştu
+                    alert('Hesap silme sırasında bir hata oluştu: ' + error.message);
+                });
+            })
+            .catch(function(error) {
+                // Authentication error
+                alert('Kullanıcı doğrulama hatası: ' + error.message);
             });
         });
     </script>
